@@ -101,11 +101,19 @@
 
     Html5Qrcode.getCameras().then(devices => {
       if (devices && devices.length) {
-        // Força uso da câmera traseira, se disponível
-        const backCamera = devices.find(cam => cam.label.toLowerCase().includes("back")) || devices[devices.length - 1];
+        // ✅ Força uso da câmera traseira se disponível
+        let cameraTraseira = devices.find(cam => 
+          cam.label.toLowerCase().includes("back") || 
+          cam.label.toLowerCase().includes("traseira") || 
+          cam.label.toLowerCase().includes("rear")
+        );
+
+        if (!cameraTraseira) {
+          cameraTraseira = devices[devices.length - 1];
+        }
 
         html5QrCode.start(
-          backCamera.id,
+          cameraTraseira.id,
           { fps: 10, qrbox: 250 },
           qrCodeSuccessCallback,
           errorMessage => {
@@ -113,7 +121,7 @@
           }
         );
       } else {
-        alert("Nenhuma câmera encontrada no dispositivo.");
+        alert("Nenhuma câmera foi encontrada no dispositivo.");
       }
     }).catch(err => {
       alert("❌ Erro ao acessar a câmera: " + err);
