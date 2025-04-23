@@ -94,27 +94,20 @@
         method: "POST",
         body: JSON.stringify(dados),
         headers: {
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "text/plain"
+        },
+        mode: "no-cors"
       })
-      .then(response => {
-        if (!response.ok) throw new Error("Erro na resposta do servidor");
-        return response.json();
-      })
-      .then(result => {
-        if (result.status === "success") {
-          mostrarMensagem("✅ Registro salvo com sucesso!", "#27ae60");
-        } else {
-          mostrarMensagem("❌ Erro: " + result.message, "#c0392b");
-        }
+      .then(() => {
+        mostrarMensagem("✅ Registro enviado com sucesso!", "#27ae60");
       })
       .catch(error => {
-        console.error("Erro ao enviar dados:", error);
-        mostrarMensagem("⚠️ Falha ao registrar. Verifique a conexão.", "#e67e22");
+        console.warn("⚠️ Erro ao enviar (no-cors ignora resposta):", error);
+        mostrarMensagem("⚠️ Registro enviado, mas não foi possível confirmar a resposta.", "#e67e22");
       });
     }
 
-    const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+    const qrCodeSuccessCallback = (decodedText) => {
       enviarDados(decodedText);
     };
 
@@ -130,11 +123,7 @@
 
         html5QrCode.start(
           cameraTraseira.id,
-          {
-            fps: 10,
-            qrbox: 250,
-            disableFlip: true
-          },
+          { fps: 10, qrbox: 250 },
           qrCodeSuccessCallback,
           error => console.warn("Erro de leitura:", error)
         );
