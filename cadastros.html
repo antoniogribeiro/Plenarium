@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Participantes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+      background-color: #f4f4f4;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 12px;
+      width: 90%;
+      max-width: 400px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      max-width: 500px;
+      margin: auto;
+    }
+
+    li {
+      background: #fff;
+      margin: 8px 0;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      text-align: left;
+      font-size: 16px;
+    }
+
+    .numero {
+      font-weight: bold;
+      color: #2980b9;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>👥 Participantes</h1>
+
+  <input type="text" id="busca" placeholder="🔍 Pesquisar por nome ou número..." oninput="filtrar()">
+
+  <ul id="lista"></ul>
+
+  <script>
+    const url = "https://script.google.com/macros/s/AKfycbxphBZWlN8YfgLVnW9eDmRgjzv2PXtOD87osLK4HrcDWmEOLNWW7dlyODUTcRbxhHk8BA/exec";
+    let participantes = [];
+
+    async function carregarParticipantes() {
+      try {
+        const res = await fetch(url);
+        participantes = await res.json();
+        exibirLista(participantes);
+      } catch (error) {
+        alert("Erro ao carregar a lista: " + error);
+      }
+    }
+
+    function exibirLista(lista) {
+      const ul = document.getElementById("lista");
+      ul.innerHTML = "";
+      lista.forEach(p => {
+        const item = document.createElement("li");
+        item.innerHTML = `<span class="numero">${p.numero}</span>${p.nome}`;
+        ul.appendChild(item);
+      });
+    }
+
+    function filtrar() {
+      const termo = document.getElementById("busca").value.toLowerCase();
+      const filtrados = participantes.filter(p =>
+        p.nome.toLowerCase().includes(termo) || p.numero.toString().includes(termo)
+      );
+      exibirLista(filtrados);
+    }
+
+    carregarParticipantes();
+  </script>
+
+</body>
+</html>

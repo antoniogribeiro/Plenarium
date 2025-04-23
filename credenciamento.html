@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credenciamento</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    #reader {
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto 20px;
+    }
+
+    .btn {
+      width: 90%;
+      max-width: 300px;
+      padding: 15px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      margin: 10px auto;
+      display: block;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .entrada {
+      background-color: #27ae60;
+    }
+
+    .saida {
+      background-color: #c0392b;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎫 Credenciamento</h1>
+
+  <div id="reader"></div>
+
+  <button class="btn entrada" onclick="setTipo('Credenciamento (Entrada)')">🟢 Entrada</button>
+  <button class="btn saida" onclick="setTipo('Credenciamento (Saída)')">🔴 Saída</button>
+
+  <script>
+    let tipoRegistro = "Credenciamento (Entrada)";
+
+    function setTipo(tipo) {
+      tipoRegistro = tipo;
+      alert("Tipo definido para: " + tipo);
+    }
+
+    function enviarDados(qrCode) {
+      const timestamp = new Date().toLocaleString("pt-BR");
+      const url = "https://script.google.com/macros/s/AKfycbxphBZWlN8YfgLVnW9eDmRgjzv2PXtOD87osLK4HrcDWmEOLNWW7dlyODUTcRbxhHk8BA/exec";
+
+      const dados = {
+        idQrCode: qrCode,
+        timestamp: timestamp,
+        tipo: tipoRegistro
+      };
+
+      fetch(url, {
+        method: "POST",
+        body: JSON.stringify(dados),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(response => response.json())
+      .then(result => {
+        if (result.status === "success") {
+          alert("✅ Dados enviados com sucesso!");
+        } else {
+          alert("❌ Erro: " + result.message);
+        }
+      })
+      .catch(error => alert("❌ Falha na conexão: " + error));
+    }
+
+    const qrCodeSuccessCallback = (decodedText) => {
+      alert("📷 QR Code lido: " + decodedText);
+      enviarDados(decodedText);
+    };
+
+    const html5QrCode = new Html5Qrcode("reader");
+
+    Html5Qrcode.getCameras().then(devices => {
+      if (devices && devices.length) {
+        const cameraId = devices[0].id;
+        html5QrCode.start(
+          cameraId,
+          { fps: 10, qrbox: 250 },
+          qrCodeSuccessCallback,
+          errorMessage => {
+            console.warn("Erro de leitura do QR:", errorMessage);
+          }
+        );
+      } else {
+        alert("Nenhuma câmera encontrada no dispositivo.");
+      }
+    }).catch(err => {
+      alert("❌ Erro ao acessar a câmera: " + err);
+    });
+  </script>
+
+</body>
+</html>
