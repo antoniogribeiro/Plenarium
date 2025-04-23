@@ -84,7 +84,7 @@
       .then(response => response.json())
       .then(result => {
         if (result.status === "success") {
-          alert("✅ Dados enviados com sucesso!");
+          alert("✅ Registro realizado com sucesso!");
         } else {
           alert("❌ Erro: " + result.message);
         }
@@ -101,9 +101,11 @@
 
     Html5Qrcode.getCameras().then(devices => {
       if (devices && devices.length) {
-        const cameraId = devices[0].id;
+        // Força uso da câmera traseira, se disponível
+        const backCamera = devices.find(cam => cam.label.toLowerCase().includes("back")) || devices[devices.length - 1];
+
         html5QrCode.start(
-          cameraId,
+          backCamera.id,
           { fps: 10, qrbox: 250 },
           qrCodeSuccessCallback,
           errorMessage => {
