@@ -45,6 +45,13 @@
     .saida {
       background-color: #c0392b;
     }
+
+    #mensagem {
+      font-size: 16px;
+      color: #444;
+      margin-top: 10px;
+      min-height: 20px;
+    }
   </style>
 </head>
 <body>
@@ -52,6 +59,8 @@
   <h1>🎫 Credenciamento</h1>
 
   <div id="reader"></div>
+
+  <div id="mensagem"></div>
 
   <button class="btn entrada" onclick="setTipo('Credenciamento (Entrada)')">🟢 Entrada</button>
   <button class="btn saida" onclick="setTipo('Credenciamento (Saída)')">🔴 Saída</button>
@@ -62,7 +71,13 @@
 
     function setTipo(tipo) {
       tipoRegistro = tipo;
-      alert("Tipo definido para: " + tipo);
+      mostrarMensagem("📍 Tipo definido: " + tipo, "#2980b9");
+    }
+
+    function mostrarMensagem(texto, cor = "#444") {
+      const msg = document.getElementById("mensagem");
+      msg.innerText = texto;
+      msg.style.color = cor;
     }
 
     function enviarDados(qrCode) {
@@ -83,28 +98,24 @@
         }
       })
       .then(response => {
-        if (!response.ok) {
-          throw new Error("Erro na resposta do servidor");
-        }
+        if (!response.ok) throw new Error("Erro na resposta do servidor");
         return response.json();
       })
       .then(result => {
         if (result.status === "success") {
-          alert("✅ Registro realizado com sucesso!");
+          mostrarMensagem("✅ Registro salvo com sucesso!", "#27ae60");
         } else {
-          alert("❌ Erro: " + result.message);
+          mostrarMensagem("❌ Erro: " + result.message, "#c0392b");
         }
       })
       .catch(error => {
         console.error("Erro ao enviar dados:", error);
-        alert("⚠️ Houve um problema ao registrar. Verifique sua conexão.");
+        mostrarMensagem("⚠️ Falha ao registrar. Verifique a conexão.", "#e67e22");
       });
     }
 
-    const qrCodeSuccessCallback = (decodedText) => {
+    const qrCodeSuccessCallback = (decodedText, decodedResult) => {
       enviarDados(decodedText);
-      html5QrCode.pause();
-      setTimeout(() => html5QrCode.resume(), 1500); // leitura contínua sem travar
     };
 
     html5QrCode = new Html5Qrcode("reader");
@@ -119,15 +130,19 @@
 
         html5QrCode.start(
           cameraTraseira.id,
-          { fps: 10, qrbox: 250 },
+          {
+            fps: 10,
+            qrbox: 250,
+            disableFlip: true
+          },
           qrCodeSuccessCallback,
           error => console.warn("Erro de leitura:", error)
         );
       } else {
-        alert("Nenhuma câmera foi encontrada no dispositivo.");
+        mostrarMensagem("Nenhuma câmera foi encontrada no dispositivo.", "#e74c3c");
       }
     }).catch(err => {
-      alert("❌ Erro ao acessar a câmera: " + err);
+      mostrarMensagem("Erro ao acessar a câmera: " + err, "#e74c3c");
     });
   </script>
 
