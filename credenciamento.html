@@ -58,6 +58,7 @@
 
   <script>
     let tipoRegistro = "Credenciamento (Entrada)";
+    let html5QrCode;
 
     function setTipo(tipo) {
       tipoRegistro = tipo;
@@ -81,7 +82,12 @@
           "Content-Type": "application/json"
         }
       })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Erro na resposta do servidor");
+        }
+        return response.json();
+      })
       .then(result => {
         if (result.status === "success") {
           alert("✅ Registro realizado com sucesso!");
@@ -89,36 +95,33 @@
           alert("❌ Erro: " + result.message);
         }
       })
-      .catch(error => alert("❌ Falha na conexão: " + error));
+      .catch(error => {
+        console.error("Erro ao enviar dados:", error);
+        alert("⚠️ Houve um problema ao registrar. Verifique sua conexão.");
+      });
     }
 
     const qrCodeSuccessCallback = (decodedText) => {
-      alert("📷 QR Code lido: " + decodedText);
       enviarDados(decodedText);
+      html5QrCode.pause();
+      setTimeout(() => html5QrCode.resume(), 1500); // leitura contínua sem travar
     };
 
-    const html5QrCode = new Html5Qrcode("reader");
+    html5QrCode = new Html5Qrcode("reader");
 
     Html5Qrcode.getCameras().then(devices => {
       if (devices && devices.length) {
-        // ✅ Força uso da câmera traseira se disponível
-        let cameraTraseira = devices.find(cam => 
-          cam.label.toLowerCase().includes("back") || 
-          cam.label.toLowerCase().includes("traseira") || 
+        const cameraTraseira = devices.find(cam =>
+          cam.label.toLowerCase().includes("back") ||
+          cam.label.toLowerCase().includes("traseira") ||
           cam.label.toLowerCase().includes("rear")
-        );
-
-        if (!cameraTraseira) {
-          cameraTraseira = devices[devices.length - 1];
-        }
+        ) || devices[devices.length - 1];
 
         html5QrCode.start(
           cameraTraseira.id,
           { fps: 10, qrbox: 250 },
           qrCodeSuccessCallback,
-          errorMessage => {
-            console.warn("Erro de leitura do QR:", errorMessage);
-          }
+          error => console.warn("Erro de leitura:", error)
         );
       } else {
         alert("Nenhuma câmera foi encontrada no dispositivo.");
