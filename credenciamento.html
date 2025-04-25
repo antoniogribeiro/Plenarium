@@ -50,7 +50,7 @@
       font-size: 16px;
       color: #444;
       margin-top: 10px;
-      min-height: 20px;
+      min-height: 40px;
     }
   </style>
 </head>
@@ -63,7 +63,6 @@
   <div id="mensagem"></div>
 
   <button class="btn entrada" onclick="setTipo('Credenciamento (Validar)')">🟢 Validar</button>
-  <!-- <button class="btn saida" onclick="setTipo('Credenciamento (Saída)')">🔴 Saída</button> -->
 
   <script>
     let tipoRegistro = "Credenciamento (Validar)";
@@ -78,6 +77,23 @@
       const msg = document.getElementById("mensagem");
       msg.innerText = texto;
       msg.style.color = cor;
+    }
+
+    function buscarNome(qrCode) {
+      const url = `https://script.google.com/macros/s/AKfycbxphBZWlN8YfgLVnW9eDmRgjzv2PXtOD87osLK4HrcDWmEOLNWW7dlyODUTcRbxhHk8BA/exec?id=${encodeURIComponent(qrCode)}`;
+
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          if (data.nome) {
+            mostrarMensagem(`👤 ${data.nome} detectado!`);
+          } else {
+            mostrarMensagem("⚠️ Participante não encontrado.");
+          }
+        })
+        .catch(() => {
+          mostrarMensagem("❌ Erro ao buscar o nome.");
+        });
     }
 
     function enviarDados(qrCode) {
@@ -99,15 +115,17 @@
         mode: "no-cors"
       })
       .then(() => {
-        mostrarMensagem("✅ Registro enviado com sucesso!", "#27ae60");
+        console.log("Registro enviado com sucesso.");
       })
       .catch(error => {
-        console.warn("⚠️ Erro ao enviar (no-cors ignora resposta):", error);
+        console.warn("⚠️ Erro ao enviar:", error);
         mostrarMensagem("⚠️ Registro enviado, mas não foi possível confirmar a resposta.", "#e67e22");
       });
     }
 
     const qrCodeSuccessCallback = (decodedText) => {
+      mostrarMensagem("🔎 Lendo QR Code...");
+      buscarNome(decodedText);
       enviarDados(decodedText);
     };
 
