@@ -52,6 +52,20 @@
       margin-top: 10px;
       min-height: 40px;
     }
+
+    #card-nome {
+      display: none;
+      margin: 20px auto;
+      max-width: 320px;
+      padding: 16px;
+      border-radius: 12px;
+      background-color: #ffffff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      font-size: 18px;
+      font-weight: bold;
+      color: #015122;
+      transition: all 0.3s ease-in-out;
+}
   </style>
 </head>
 <body>
@@ -61,6 +75,9 @@
   <div id="reader"></div>
 
   <div id="mensagem"></div>
+
+  <div id="card-nome">👤 Nome carregado</div>
+
 
   <button class="btn entrada" onclick="setTipo('Credenciamento (Validar)')">🟢 Validar</button>
 
@@ -79,22 +96,30 @@
       msg.style.color = cor;
     }
 
-    function buscarNome(qrCode) {
-      const url = `https://script.google.com/macros/s/AKfycbxphBZWlN8YfgLVnW9eDmRgjzv2PXtOD87osLK4HrcDWmEOLNWW7dlyODUTcRbxhHk8BA/exec?id=${encodeURIComponent(qrCode)}`;
+  function buscarNome(qrCode) {
+  const url = `https://script.google.com/macros/s/AKfycbxphBZWlN8YfgLVnW9eDmRgjzv2PXtOD87osLK4HrcDWmEOLNWW7dlyODUTcRbxhHk8BA/exec?id=${encodeURIComponent(qrCode)}`;
+  const card = document.getElementById("card-nome");
 
-      fetch(url)
-        .then(res => res.json())
-        .then(data => {
-          if (data.nome) {
-            mostrarMensagem(`👤 ${data.nome} detectado!`);
-          } else {
-            mostrarMensagem("⚠️ Participante não encontrado.");
-          }
-        })
-        .catch(() => {
-          mostrarMensagem("❌ Erro ao buscar o nome.");
-        });
-    }
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      if (data.nome) {
+        card.innerText = `👤 ${data.nome}`;
+        card.style.display = "block";
+        mostrarMensagem("✅ Participante identificado!", "#27ae60");
+      } else {
+        card.innerText = "⚠️ Participante não encontrado.";
+        card.style.display = "block";
+        mostrarMensagem("❌ ID não localizado.", "#e74c3c");
+      }
+    })
+    .catch(() => {
+      card.innerText = "❌ Erro ao buscar o nome.";
+      card.style.display = "block";
+      mostrarMensagem("Erro na requisição de nome.", "#e74c3c");
+    });
+}
+
 
     function enviarDados(qrCode) {
       const timestamp = new Date().toLocaleString("pt-BR");
