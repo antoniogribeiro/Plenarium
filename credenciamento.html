@@ -66,9 +66,78 @@
       color: #015122;
       transition: all 0.3s ease-in-out;
 }
+#menu-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 28px;
+  color: rgb(1, 63, 13);
+  z-index: 3;
+  cursor: pointer;
+}
+
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  width: 250px;
+  height: 100%;
+  background-color: #2980b9;
+  display: flex;
+  flex-direction: column;
+  padding-top: 60px;
+  transition: left 0.3s ease;
+  z-index: 4;
+}
+
+#sidebar a {
+  padding: 15px 20px;
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+#sidebar a:hover {
+  background-color: #1f6390;
+}
+
+#sidebar.open {
+  left: 0;
+}
+
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+  z-index: 2;
+}
+
+#overlay.show {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease;
+}
+
   </style>
 </head>
 <body>
+  <div id="menu-btn">☰</div>
+
+<div id="sidebar">
+  <a href="credenciamento.html">🎫 Credenciamento</a>
+  <a href="1sessao.html">🎫 1ª Sessão - Tarde</a>
+  <a href="cadastros.html">👥 Participantes</a>
+  <a href="index.html">🏠 Início</a>
+</div>
+
+<div id="overlay" onclick="closeSidebar()"></div>
 
   <h1>🎫 Credenciamento</h1>
 
@@ -177,6 +246,21 @@
       mostrarMensagem("Erro ao acessar a câmera: " + err, "#e74c3c");
     });
   </script>
-
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuBtn = document.getElementById('menu-btn');
+  
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.add('open');
+      overlay.classList.add('show');
+    });
+  
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+  }
+  
+  </script>
 </body>
 </html>
