@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>1ª Sessão - Tarde</title>
+  <title>2ª Sessão - Manhã</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
     body {
@@ -131,16 +131,16 @@
   <div id="menu-btn">☰</div>
 
 <div id="sidebar">
-    <a href="index.html">🏠 Início</a>
-    <a href="cadastros.html">👥 Participantes</a>
-    <a href="credenciamento.html">✅ Credenciamento</a>
-    <a href="1sessao.html">🎫 1ª Sessão - Tarde</a>
-    <a href="2sessao.html">🎟 2ª Sessão - Manhã</a>
+  <a href="index.html">🏠 Início</a>
+  <a href="cadastros.html">👥 Participantes</a>
+  <a href="credenciamento.html">✅ Credenciamento</a>
+  <a href="1sessao.html">🎫 1ª Sessão - Tarde</a>
+  <a href="2sessao.html">🎟 2ª Sessão - Manhã</a>
 </div>
 
 <div id="overlay" onclick="closeSidebar()"></div>
 
-  <h1>🎫 1ª Sessão - Tarde</h1>
+  <h1>🎟 2ª Sessão - Manhã</h1>
 
   <div id="reader"></div>
 
@@ -149,11 +149,11 @@
   <div id="card-nome">👤 Nome carregado</div>
 
 
-  <button class="btn entrada" onclick="setTipo('1ª Sessão - Tarde (Entrada)')">🟢 Entrada</button>
-  <button class="btn saida" onclick="setTipo('1ª Sessão - Tarde (Saída)')">🔴 Saída</button>
+  <button class="btn entrada" onclick="setTipo('2ª Sessão - Manhã (Entrada)')">🟢 Entrada</button>
+  <button class="btn saida" onclick="setTipo('2ª Sessão - Manhã (Saída)')">🔴 Saída</button>
 
   <script>
-    let tipoRegistro = "1ª Sessão - Tarde (Entrada)";
+    let tipoRegistro = "2ª Sessão - Manhã (Entrada)";
     let html5QrCode;
 
     function setTipo(tipo) {
