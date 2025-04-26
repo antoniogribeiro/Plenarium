@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#27ae60">
+  <link rel="icon" type="image/png" href="Logo-Instituto-Plenarium-Secundaria-1536x654.png">
+
+  <title>Plenarium - Relatório</title>
+
+  <style>
+    /* Estilos base */
+    #menu-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 28px;
+      color: rgb(1, 63, 13);
+      z-index: 3;
+      cursor: pointer;
+    }
+
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background-color: #2980b9;
+      display: flex;
+      flex-direction: column;
+      padding-top: 60px;
+      transition: left 0.3s ease;
+      z-index: 4;
+    }
+
+    #sidebar a {
+      padding: 15px 20px;
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+
+    #sidebar a:hover {
+      background-color: #1f6390;
+    }
+
+    #sidebar.open {
+      left: 0;
+    }
+
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+      z-index: 2;
+    }
+
+    #overlay.show {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.3s ease;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+      background-color: #d2f5e0;
+      background-image: url('Logo-Instituto-Plenarium-Secundaria-1536x654.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 1500px;
+      background-attachment: fixed;
+    }
+
+    .overlay {
+      background-color: rgba(39, 174, 96, 0.8);
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1;
+    }
+
+    main {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-size: 26px;
+      color: white;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    }
+
+    #relatorio {
+      background: rgba(255,255,255,0.9);
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 400px;
+      margin-top: 20px;
+      box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
+      text-align: left;
+      font-size: 18px;
+      color: #2c3e50;
+      line-height: 1.6;
+    }
+
+    #relatorio p {
+      margin: 10px 0;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div id="menu-btn">☰</div>
+
+  <div id="sidebar">
+    <a href="index.html">🏠 Início</a>
+    <a href="cadastros.html">👥 Participantes</a>
+    <a href="credenciamento.html">✅ Credenciamento</a>
+    <a href="1sessao.html">🎫 1ª Sessão - Tarde</a>
+    <a href="2sessao.html">🎟 2ª Sessão - Manhã</a>
+    <a href="relatorio.html">📈 Relatório</a>
+  </div>
+
+  <div id="overlay" onclick="closeSidebar()"></div>
+
+  <div class="overlay"></div>
+
+  <main>
+    <h1>📈 Relatório de Participantes</h1>
+
+    <div id="relatorio">
+      <p>Carregando dados...</p>
+    </div>
+  </main>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log("✅ Service Worker registrado"));
+    }
+  </script>
+
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuBtn = document.getElementById('menu-btn');
+
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.add('open');
+      overlay.classList.add('show');
+    });
+
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+    }
+  </script>
+
+  <script>
+    async function carregarRelatorio() {
+      try {
+        const resposta = await fetch('https://script.google.com/macros/s/AKfycbxphBZWlN8YfgLVnW9eDmRgjzv2PXtOD87osLK4HrcDWmEOLNWW7dlyODUTcRbxhHk8BA/exec');
+        const dados = await resposta.json();
+
+        const relatorio = document.getElementById("relatorio");
+
+        let credenciamento = 0;
+        let sessaoTarde = 0;
+        let sessaoManha = 0;
+
+        dados.forEach(item => {
+          if (item.credenciamento) credenciamento++;
+          if (item.sessaoTarde) sessaoTarde++;
+          if (item.sessaoManha) sessaoManha++;
+        });
+
+        relatorio.innerHTML = `
+          <p>✅ <strong>Credenciamento:</strong> ${credenciamento} participantes</p>
+          <p>🌇 <strong>1ª Sessão - Tarde:</strong> ${sessaoTarde} participantes</p>
+          <p>🌅 <strong>2ª Sessão - Manhã:</strong> ${sessaoManha} participantes</p>
+        `;
+      } catch (error) {
+        console.error('Erro ao carregar o relatório:', error);
+        document.getElementById("relatorio").innerHTML = "<p>Erro ao carregar o relatório.</p>";
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', carregarRelatorio);
+  </script>
+
+</body>
+</html>
